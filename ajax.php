@@ -62,6 +62,7 @@ if($action == "save_student"){
 	$save = $crud->save_student();
 	if($save)
 		echo $save;
+		
 }
 if($action == "delete_student"){
 	$delete = $crud->delete_student();

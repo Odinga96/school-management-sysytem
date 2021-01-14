@@ -11,10 +11,10 @@ foreach($qry->fetch_array() as $k => $val){
     <form action="" id="manage-student">
         <input type="hidden" name="id" value="<?php echo isset($id) ? $id : '' ?>">
         <div id="msg" class="form-group"></div>
-        <div class="form-group">
+        <!-- <div class="form-group">
             <label for="" class="control-label">Admission No.</label>
             <input type="text" class="form-control" name="id_no"  value="<?php echo isset($id_no) ? $id_no :'' ?>" required>
-        </div>
+        </div> -->
         <div class="form-group">
             <label for="" class="control-label">Name</label>
             <input type="text" class="form-control" name="name"  value="<?php echo isset($name) ? $name :'' ?>" required>
@@ -51,6 +51,8 @@ foreach($qry->fetch_array() as $k => $val){
             method: 'POST',
             type: 'POST',
             success:function(resp){
+                console.log(resp);
+
                 if(resp==1){
                     alert_toast("Data successfully saved.",'success')
                         setTimeout(function(){
@@ -60,7 +62,12 @@ foreach($qry->fetch_array() as $k => $val){
                 $('#msg').html('<div class="alert alert-danger mx-2">ID # already exist.</div>')
                 end_load()
                 }   
+            },
+            error:function(resp){
+                console.log(resp);
+                
             }
+            
         })
     })
 

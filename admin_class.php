@@ -30,6 +30,7 @@ Class Action {
 			return 3;
 		}
 	}
+
 	function login2(){
 		
 		extract($_POST);		
@@ -44,6 +45,7 @@ Class Action {
 			return 3;
 		}
 	}
+
 	function logout(){
 		session_destroy();
 		foreach ($_SESSION as $key => $value) {
@@ -51,6 +53,7 @@ Class Action {
 		}
 		header("location:login.php");
 	}
+
 	function logout2(){
 		session_destroy();
 		foreach ($_SESSION as $key => $value) {
@@ -83,12 +86,14 @@ Class Action {
 			return 1;
 		}
 	}
+
 	function delete_user(){
 		extract($_POST);
 		$delete = $this->db->query("DELETE FROM users where id = ".$id);
 		if($delete)
 			return 1;
 	}
+
 	function signup(){
 		extract($_POST);
 		$data = " name = '$name' ";
@@ -120,6 +125,7 @@ Class Action {
 				}
 		}
 	}
+
 	function update_account(){
 		extract($_POST);
 		$data = " name = '".$firstname.' '.$lastname."' ";
@@ -190,6 +196,7 @@ Class Action {
 			return 1;
 				}
 	}
+
 	function save_course(){
 		extract($_POST);
 		$data = "";
@@ -240,6 +247,7 @@ Class Action {
 		}
 
 	}
+
 	function delete_course(){
 		extract($_POST);
 		$delete = $this->db->query("DELETE FROM courses where id = ".$id);
@@ -253,26 +261,30 @@ Class Action {
 	 	$year = date("y");
 
 		$check = $this->db->query("SELECT * FROM current_admission_no where `year` =$year ")->num_rows;
+		$admission = "";
 
 		if($check == 0) {
 			//insert new record for year
 			$this->db->query("INSERT INTO current_admission_no set `number`=1, `year`=$year");
 
-			return 1;
+			$admission = "1/$year";
 		}else {
 			//get latest admission number and increme
 			$numbers = $this->db->query("SELECT * FROM current_admission_no where  `year` =$year ");
 
-			$admission = 0;
-			while($row=$numbers->fetch_assoc()){$admission = $row['number'];}
+			$admission = $numbers->fetch_assoc()['number'];
 			
 			$this->db->query("UPDATE current_admission_no set `number`= `number`+1 where `year`=$year");
-
-
-
-			return $admission;
+			
+			$admission = "$admission/$year";
 		}
 
+		$len = strlen($admission);
+		$to_append = "";
+
+		for ($i=0; $i < 6-$len; $i++) { $to_append .= "0";}
+
+		return $to_append.$admission;
 
 	}
 
@@ -288,27 +300,27 @@ Class Action {
 				}
 			}
 		}
-		$check = $this->db->query("SELECT * FROM student where id_no ='$id_no' ".(!empty($id) ? " and id != {$id} " : ''))->num_rows;
-		if($check > 0){
-			return 2;
-			exit;
-		}
+	
 		if(empty($id)){
-			$save = $this->db->query("INSERT INTO student set $data");
+			$admission = $this -> current_admission();
 			
-		}else{
-			$save = $this->db->query("UPDATE student set $data where id = $id");
-		}
-		if($save)
-			return 1;
+			$data .= ", id_no='$admission'";
+			
+			// $data .= ", id_no='$admission'";
+			$save = $this->db->query("INSERT INTO student set $data");
+
+			
+		}else{ $save = $this->db->query("UPDATE student set $data where id = $id"); }
+
+		if($save) return 1;
 	}
+
 	function delete_student(){
 		extract($_POST);
 		$delete = $this->db->query("DELETE FROM student where id = ".$id);
-		if($delete){
-			return 1;
-		}
+		if($delete){ return 1; }
 	}
+
 	function save_fees(){
 		extract($_POST);
 		$data = "";
@@ -337,6 +349,7 @@ Class Action {
 		if($save)
 			return 1;
 	}
+
 	function delete_fees(){
 		extract($_POST);
 		$delete = $this->db->query("DELETE FROM student_ef_list where id = ".$id);
@@ -344,6 +357,7 @@ Class Action {
 			return 1;
 		}
 	}
+
 	function save_payment(){
 		extract($_POST);
 		$data = "";
@@ -378,5 +392,8 @@ Class Action {
 	}
 }
 
-Action::current_admission();
+// $ac = new Action();
+// $commision = $ac -> current_admission();
+// echo $commision;
+
 ?>
